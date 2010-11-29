@@ -13,7 +13,7 @@
 #define UR_SYSTEM_POLL_TIMOUT_MS 100
 // #define UR_SYSTEM_DEBUG
 
-void cleanup(uw_Process_result * reply){
+void cleanup(uw_Process_result reply){
   UW_SYSTEM_PIPE_CLOSE(reply->cmd_to_ur);
   UW_SYSTEM_PIPE_CLOSE(reply->ur_to_cmd);
 
@@ -27,7 +27,7 @@ void cleanup(uw_Process_result * reply){
 }
 
 
-uw_Process_result * uw_Process_exec(
+uw_Process_result uw_Process_exec(
     uw_context ctx,
     uw_Basis_string cmd,
     uw_Basis_blob stdin_,
@@ -35,7 +35,7 @@ uw_Process_result * uw_Process_exec(
 ){
 
   // initialize so that cleanup can be called, and register cleanup function
-  uw_Process_result * reply = uw_malloc(ctx, sizeof(uw_Process_result));
+  uw_Process_result reply = uw_malloc(ctx, sizeof(uw_Process_result_struct));
   UW_SYSTEM_PIPE_INIT(reply->ur_to_cmd);
   UW_SYSTEM_PIPE_INIT(reply->cmd_to_ur);
   reply->pid = -1;
@@ -172,13 +172,13 @@ uw_Process_result * uw_Process_exec(
   return reply;
 }
 
-uw_Basis_int uw_Process_status(uw_context ctx, uw_Process_result * reply){
+uw_Basis_int uw_Process_status(uw_context ctx, uw_Process_result reply){
   return reply->status;
 }
-uw_Basis_blob uw_Process_blob(uw_context ctx, uw_Process_result * reply){
+uw_Basis_blob uw_Process_blob(uw_context ctx, uw_Process_result reply){
   return reply->blob;
 }
-uw_Basis_bool uw_Process_buf_full(uw_context ctx, uw_Process_result * reply){
+uw_Basis_bool uw_Process_buf_full(uw_context ctx, uw_Process_result reply){
   return !!(reply->bufsize == reply->blob.size);
 }
 
