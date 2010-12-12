@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <urweb.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -24,6 +25,7 @@ void cleanup(uw_Process_result reply){
     // remove zombie process by getting pid status
    int rc = waitpid(reply->pid, &status, 0);
   }
+  free (reply);
 }
 
 
@@ -35,7 +37,8 @@ uw_Process_result uw_Process_exec(
 ){
 
   // initialize so that cleanup can be called, and register cleanup function
-  uw_Process_result reply = uw_malloc(ctx, sizeof(uw_Process_result_struct));
+  // unfortunately can't use uw_malloc here !
+  uw_Process_result reply = malloc(sizeof(uw_Process_result_struct));
   UW_SYSTEM_PIPE_INIT(reply->ur_to_cmd);
   UW_SYSTEM_PIPE_INIT(reply->cmd_to_ur);
   reply->pid = -1;
