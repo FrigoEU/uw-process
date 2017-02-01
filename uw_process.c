@@ -39,6 +39,7 @@ uw_Process_process_result uw_Process_exec(
   // initialize so that cleanup can be called, and register cleanup function
   // unfortunately can't use uw_malloc here !
   uw_Process_process_result reply = malloc(sizeof(uw_Process_process_result_struct));
+  uw_push_cleanup(ctx, (void (*)(void *))cleanup, reply);
   UW_SYSTEM_PIPE_INIT(reply->ur_to_cmd);
   UW_SYSTEM_PIPE_INIT(reply->cmd_to_ur);
   reply->pid = -1;
@@ -46,7 +47,6 @@ uw_Process_process_result uw_Process_exec(
   reply->blob.size = 0;
   reply->bufsize = bufsize;
   reply->blob.data = (char *) uw_malloc(ctx, bufsize);
-  uw_push_cleanup(ctx, (void (*)(void *))cleanup, reply);
 
   // try creating pipes
   UW_SYSTEM_PIPE_CREATE_OR_URWEB_ERROR(reply->ur_to_cmd);
