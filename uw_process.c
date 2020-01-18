@@ -23,7 +23,7 @@ void cleanup(uw_Process_process_result reply){
     // kill process
     kill(reply->pid, SIGTERM);
     // remove zombie process by getting pid status
-   int rc = waitpid(reply->pid, &status, 0);
+   waitpid(reply->pid, &status, 0);
   }
   free (reply);
 }
@@ -71,12 +71,13 @@ uw_Process_process_result uw_Process_exec(
     // set stdout
     close(1);
     ignored = dup(reply->cmd_to_ur[1]);
+    (void)ignored;
     // close(2);
     // ignored = dup(fd_from_cmd[1]);
     close(reply->cmd_to_ur[1]);
 
     // run command using /bin/sh shell - is there a shorter way to do this?
-    char * argv[3];
+    char * argv[4];
     argv[0] = "/bin/sh";
     argv[1] = "-c";
     argv[2] = cmd;
@@ -193,7 +194,7 @@ uw_Basis_string   uw_Process_blobText (uw_context ctx, uw_Basis_blob blob){
     *write =  blob.data[i];
     if (*write == '\0')
       *write = '\n';
-    *write++;
+    /* *write++; */
   }
   *write=0;
   return c;
